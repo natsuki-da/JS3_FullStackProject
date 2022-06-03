@@ -1,0 +1,55 @@
+.aboutPage {
+  display: flex;
+  align-items: center;
+  background-color: rgb(218, 14, 126);
+  border-radius: 30px;
+}
+
+.abtTitle {
+  font-family: "Yellowtail";
+}
+
+.abtLeft {
+  flex: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 10px 30px 10px 30px;
+  /* background-color: green; */
+  color: white;
+}
+
+.abtSubtitle {
+  font-size: 25px;
+  font-weight: 800;
+  margin: 20px 0;
+  font-weight: 300;
+}
+
+.abtRight {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* background-color: yellow; */
+}
+
+.abtDescription {
+  font-size: 20px;
+  font-weight: 200;
+}
+.me-image {
+  width: 90%;
+  height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* background-color: blue; */
+}
+
+.me {
+  width: auto;
+  height: 85%;
+  object-fit: contain;
+  border-radius: 20px;
+}

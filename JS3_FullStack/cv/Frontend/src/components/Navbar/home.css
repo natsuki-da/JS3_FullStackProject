@@ -1,0 +1,96 @@
+.intro {
+  display: flex;
+  height: 100vh;
+  background-color: white;
+}
+
+.left {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.right {
+  flex: 1;
+}
+
+.left-wrapper {
+  padding: 50px;
+  width: 100%;
+  height: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.i-hi {
+  font-size: 50px;
+  font-weight: 300;
+  color: rgb(218, 14, 126);
+}
+
+.i-name {
+  font-size: 100px;
+  color: rgb(218, 14, 126);
+}
+
+.i-job {
+  height: 50px;
+  overflow: hidden;
+}
+
+.i-job-wrapper {
+  height: 100%;
+  animation: move 10s ease-in-out infinite alternate;
+}
+
+@keyframes move {
+  25% {
+    transform: translateY(-50px);
+  }
+  50% {
+    transform: translateY(-100px);
+  }
+  75% {
+    transform: translateY(-150px);
+  }
+  100% {
+    transform: translateY(-200px);
+  }
+}
+
+.i-job-item {
+  height: 50px;
+  font-size: 30px;
+  font-weight: bold;
+  color: black;
+  display: flex;
+  align-items: center;
+}
+
+.i-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.icons {
+  display: flex;
+  align-items: center;
+  margin: 50px 0px;
+  font-weight: 300;
+  width: 70%px;
+}
+
+.facebook {
+  width: 75px;
+  height: 75px;
+  margin-right: 50px;
+}
+.instagram,
+.linkedin {
+  width: 60px;
+  height: 60px;
+  margin-right: 50px;
+}
