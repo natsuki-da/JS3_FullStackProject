@@ -35,27 +35,11 @@ app.post('/api/insert_skill', (req, res) => {
     });
 });
 
-function getSkills(projects, res) {
-        projects.forEach(function(project, index, newProjects){
-       const sqlSelectSkills = "SELECT * FROM Skill where projectid = ?";
-         db.query(sqlSelectSkills, project['id'], (err, result) => {
-            project['skills'] = result;
-            newProjects[index] = project;
-           })
-        });
-        
-        console.log(projects);
-        res.send(projects);        
-};
-
-
 //Fetch project
 app.get('/api/get', (req, res)  =>{
     const sqlSelect = "SELECT * FROM project";
    
     db.query(sqlSelect, (err, result) => {
-        //getSkills(result, res);
-        // result[0]['skills'] = '';
         res.send(result);
     });
 
@@ -72,34 +56,7 @@ app.get('/api/get_skill', (req, res) =>{
     });
 })
 
-app.get('/api/skill/:id', (req, res) => {
-    const id = req.params.id;
-    const sqlGetSkill = "SELECT * FROM Skill WHERE projectid = ?";
-    db.query(sqlGetSkill, id, (err, result) => {
-        if (err) console.log(err);
-        res.send(result);
-    });
 
-   
-});
-
-
-// app.get('/api/get', (req, res) =>{
-//     const sqlSelect = "SELECT * FROM Skill";
-//     db.query(sqlSelect, (err, result) => {
-//         // console.log(err, result);
-//         res.send(result);
-//     });
-// })
-
-// app.get('/api/get/project/:name', (req, res) =>{
-//     const sqlSelect = "SELECT * FROM project where projectName = ?";
-//     const name = req.params.name;
-//     db.query(sqlSelect, name, (err, result) => {
-//         // console.log(err, result);
-//         res.send(result);
-//     });
-// })
 
 app.delete('/api/delete/:id', (req, res) => {
     const id = req.params.id;
