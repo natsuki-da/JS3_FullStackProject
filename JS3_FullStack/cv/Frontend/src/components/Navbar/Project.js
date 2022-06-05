@@ -18,19 +18,12 @@ import axios from 'axios';
 const Project = () => {
     const [projectName, setProjectName] = useState("");
     const [projectDescription, setProjectDescription] = useState("");
-    const [projectDescriptionList, setProjectNameList] = useState([]);
-    const [newDescription, setNewDescription] = useState("");
+    const [projectList, setProjectList] = useState([]);
     const [skill, setSkill] = useState("");
-    // const [projectId, setProjectId] = useState("");
-    const [projectIdList, setSkillList] = useState([]);
+    const [skillList, setSkillList] = useState([]);
     
 
-    useEffect(()=>{
-        axios.get("http://localhost:3001/api/get").then((response) =>{
-            // console.log(response.data);
-            setProjectNameList(response.data);
-        });
-    }, []);
+
 
     const submitProject = () => {
         axios.post("http://localhost:3001/api/insert", {
@@ -38,96 +31,100 @@ const Project = () => {
             projectDescription: projectDescription,
         });
 
-        setProjectNameList([...projectDescriptionList, {
+        setProjectList([...projectList, {
             projectName: projectName, 
             projectDescription: projectDescription},
         ]);
     };
     
     const fetchProjects = async () => {
-        const res = await fetch('http://localhost:3001/api/get')
-        const data = await res.json()
-        return data
+        const req1 = axios.get('http://localhost:3001/api/get')
+        const req2 = axios.get('http://localhost:3001/api/get_skill')
+        await axios.all([req1, req2]).then(axios.spread(function(res1, res2) {
+            let arr = []
+            res1.data.forEach(function (project ) {  
+                if (project.hasOwnProperty('skills') == false)  {
+                        project['skills'] = [];
+                }          
+                res2.data.forEach(function (skill) {
+                    
+                    if (project.id == skill.projectId) {
+                        project['skills'].push(skill);
+                    }    
+                       
+                    }); 
+                    arr.push(project)           
+            }  );
+          
+            setProjectList(arr)
+         } )); 
       }  
+
+
 
     useEffect(()=>{
         const getProjects = async () => {
-            const projectsFromApi = await fetchProjects();
-            setProjectNameList(projectsFromApi);
+            await fetchProjects();
         }
-        getProjects();
+
         
-        projectDescriptionList.map((project) =>  {
-          console.log(project);
-          getSkill(project.id);
-        });
+        getProjects();
     }, []);
 
-    const deleteProject = (project) => {
-        axios.delete(`http://localhost:3001/api/delete/${project}`);
+    const deleteProject = (projectid) => {
+        axios.delete(`http://localhost:3001/api/delete/${projectid}`);
+        setProjectList(projectList.filter((p) => p.id !== projectid ))
     };
 
-    const updateProject = (newDescription, id) => {
+    const updateProject = (projectDescription, id) => {
         axios.put("http://localhost:3001/api/update", {
             id: id, 
-            projectDescription: newDescription,
+            projectDescription: projectDescription,
         });
-        setNewDescription(newDescription);
+        setProjectDescription(projectDescription);
+        setProjectList(projectList.map((p) => p.id === id ? { ...p, projectDescription: projectDescription} : p ))
     };
 
-    const getSkill = (projectId) =>  {
-    
-        axios.get(`http://localhost:3001/api/skill/${projectId}`).then((response) =>{
-        setProjectNameList(
-            projectDescriptionList.map((project) =>
-                project.id === projectId ? { ...project, skill: response.data } : project
-            )
-
-        ) 
-        });
-        projectDescriptionList.map((val) => {
-            console.log('test');
-        }); 
-    };    
     const addNewSkill = (projectId) => {
-        axios.post("http://localhost:3001/api/insert_skill", {
+        const res = axios.post("http://localhost:3001/api/insert_skill", {
             skill: skill, 
             projectId: projectId,
         });
-        console.log('addedSkill');
+        projectList.forEach(function (p ) {
+            if(p.hasOwnProperty('skills') === false ) {
+                p['skills'] = [];
+            }
+        });
+        setProjectList(projectList.map((p) => p.id === projectId ? { ...p, skills: [...p.skills, {id:res.data, projectId:projectId, skill: skill}]} : p ))
     };
 
-    useEffect(()=>{
-        axios.get("http://localhost:3001/api/get_skill").then((response) =>{
-            //console.log(response.data);
-            setSkillList(response.data);
-        });
-    }, []);
 
     return (
         <Container>
-          {projectDescriptionList.map((val) => {
+          {projectList.map((val, index) => {
                 return (
                     <div className="card" key={val.id}>
                         
-                        <p>{val.skill}</p>
                         <h3>{val.projectName}</h3>
                         <div>Project Description: </div>
                         <div>{val.projectDescription}</div>
-                        {/* <div>{val.id}</div> */}
+                        <div>Skills: </div>
+                        
+                        <div>{val.hasOwnProperty('skills') ? 
+                                (val.skills.map((skill, index) => 
+                            {return (<div key={index}>{skill.skill}</div>)})) 
+                            : ( 'No skills added yet' ) }</div>
+                      
 
                         <input type="text" id="updateInput" placeholder="Description" onChange={(e) => {
-                            setNewDescription(e.target.value)
+                            setProjectDescription(e.target.value)
                         }}></input>
-                        <button className="btn btn-primary" onClick={() => {updateProject(newDescription, val.id)}}>Update</button>
+                        <button className="btn btn-primary" onClick={() => {updateProject(projectDescription, val.id)}}>Update</button>
                         <button className="btn btn-secondary" onClick={() => {deleteProject(val.id)}}>Delete</button>
                         
                         <label>Skills: </label>
                         <input type="text" name="skill" onChange={(e) =>{
                             setSkill(e.target.value);}}/>
-                        {/* <label>Project Id: </label> */}
-                        {/* <input type="text" name="projectId" onChange={(e) =>{
-                            setProjectId(e.target.value);}}/> */}
                         <button className="btn btn-primary" onClick={() => {addNewSkill(val.id)}}>Add</button>
                         
                         
