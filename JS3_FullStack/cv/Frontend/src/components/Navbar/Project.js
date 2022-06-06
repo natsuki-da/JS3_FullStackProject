@@ -1,16 +1,3 @@
-// import React from 'react';
-// import ProjectList from "../../components/Navbar/ProjectList.js";
-// import ProjectAdd from "../../components/Navbar/ProjectAdd.js";
-
-// const Project = () => {
-//     return(
-//     <div className="project">
-//       <ProjectList />
-//       <ProjectAdd />
-//     </div>
-//   );
-// };
-
 import React, { useState, useEffect } from 'react';
 import {Container} from 'react-bootstrap';
 import axios from 'axios';
@@ -21,9 +8,8 @@ const Project = () => {
     const [projectList, setProjectList] = useState([]);
     const [skill, setSkill] = useState("");
     const [skillList, setSkillList] = useState([]);
+    const [searchTerm, setSearchTerm] = useState("");
     
-
-
 
     const submitProject = () => {
         axios.post("http://localhost:3001/api/insert", {
@@ -58,7 +44,7 @@ const Project = () => {
           
             setProjectList(arr)
          } )); 
-      }  
+      };
 
 
 
@@ -66,7 +52,6 @@ const Project = () => {
         const getProjects = async () => {
             await fetchProjects();
         }
-
         
         getProjects();
     }, []);
@@ -97,14 +82,29 @@ const Project = () => {
         });
         setProjectList(projectList.map((p) => p.id === projectId ? { ...p, skills: [...p.skills, {id:res.data, projectId:projectId, skill: skill}]} : p ))
     };
+    
 
 
     return (
         <Container>
-          {projectList.map((val, index) => {
-                return (
+            <div className="form">
+                <h1>New Projects</h1>
+                <label>Project Name: </label>
+                <input type="text" name="projectName" onChange={(e)=>{
+                    setProjectName(e.target.value);}}/>
+                <label>Project Description: </label>
+                <input type="text" name="projectDescription" onChange={(e) =>{
+                    setProjectDescription(e.target.value);}}/>
+                <button className="button" onClick={submitProject}>Submit</button>
+            </div>
+            
+            <div className="search">
+                    <input type="text" id="searchBar" placeholder="Search for a specific project..." onChange={(e) => {setSearchTerm(e.target.value);}}></input>
+            </div>
+
+            {projectList.map((val, index) => {
+                let htmlCode = (
                     <div className="card" key={val.id}>
-                        
                         <h3>{val.projectName}</h3>
                         <div>Project Description: </div>
                         <div>{val.projectDescription}</div>
@@ -115,36 +115,29 @@ const Project = () => {
                             {return (<div key={index}>{skill.skill}</div>)})) 
                             : ( 'No skills added yet' ) }</div>
                       
-
                         <input type="text" id="updateInput" placeholder="Description" onChange={(e) => {
                             setProjectDescription(e.target.value)
                         }}></input>
-                        <button className="btn btn-primary" onClick={() => {updateProject(projectDescription, val.id)}}>Update</button>
-                        <button className="btn btn-secondary" onClick={() => {deleteProject(val.id)}}>Delete</button>
+                        <button className="button" onClick={() => {updateProject(projectDescription, val.id)}}>Update</button>
+                        <button className="button" onClick={() => {deleteProject(val.id)}}>Delete</button>
                         
                         <label>Skills: </label>
-                        <input type="text" name="skill" onChange={(e) =>{
+                        <input type="text" id="skill" onChange={(e) =>{
                             setSkill(e.target.value);}}/>
-                        <button className="btn btn-primary" onClick={() => {addNewSkill(val.id)}}>Add</button>
-                        
-                        
+                        <button className="button" onClick={() => {addNewSkill(val.id)}}>Add</button>
                     </div>
                 );
+
+                if (searchTerm == "") {
+                    return htmlCode
+                } else if (val.projectName.toLowerCase().includes(searchTerm.toLowerCase())){
+                    return htmlCode
+                }
                 })}
+            
 
 
-            <div >
-                <h1>New Projects</h1>
-                <div className="form">
-                    <label>Project Name: </label>
-                    <input type="text" name="projectName" onChange={(e)=>{
-                        setProjectName(e.target.value);}}/>
-                    <label>Project Description: </label>
-                    <input type="text" name="projectDescription" onChange={(e) =>{
-                         setProjectDescription(e.target.value);}}/>
-                    <button onClick={submitProject}>Submit</button>
-                </div>
-            </div>
+
         </Container>
     );
 };
