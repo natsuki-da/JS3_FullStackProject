@@ -18,9 +18,9 @@ function Navigationbar(){
                         <Link to="/about" className="about">
                             <li>About</li>
                         </Link>
-                        <Link to="/contact" className="contact">
+                        {/* <Link to="/contact" className="contact">
                             <li>Contact</li>
-                        </Link>
+                        </Link> */}
                         <Link to="/project" className="project">
                             <li>Project</li>
                         </Link>

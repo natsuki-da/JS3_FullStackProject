@@ -9,8 +9,8 @@ const Project = () => {
     const [skill, setSkill] = useState("");
     const [skillList, setSkillList] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
-    
 
+    //Submit a project via API
     const submitProject = () => {
         axios.post("http://localhost:3001/api/insert", {
             projectName: projectName, 
@@ -23,15 +23,31 @@ const Project = () => {
         ]);
     };
     
+    //Get a project from database via API
     const fetchProjects = async () => {
         const req1 = axios.get('http://localhost:3001/api/get')
         const req2 = axios.get('http://localhost:3001/api/get_skill')
-        await axios.all([req1, req2]).then(axios.spread(function(res1, res2) {
+        await axios.all([req1, req2]).then(axios.spread(
+            /** 
+             * Get all projects and skills 
+             * @param {array} res1 This is projects
+             * @param {array} res2 This is skills
+             */
+            function(res1, res2) {
             let arr = []
+            
+            /** 
+             * Go through each project
+             * @param {array} project will constis of skills and projects
+            */
             res1.data.forEach(function (project ) {  
                 if (project.hasOwnProperty('skills') == false)  {
                         project['skills'] = [];
-                }          
+                }
+                /** 
+                 * Combine projects and skills
+                 * @param {array} skill 
+                 * */          
                 res2.data.forEach(function (skill) {
                     
                     if (project.id == skill.projectId) {
@@ -39,6 +55,7 @@ const Project = () => {
                     }    
                        
                     }); 
+                    
                     arr.push(project)           
             }  );
           
@@ -51,30 +68,46 @@ const Project = () => {
     useEffect(()=>{
         const getProjects = async () => {
             await fetchProjects();
-        }
-        
+        }   
         getProjects();
     }, []);
 
+    
+    /** 
+     * Delete a project via API
+     * @param {number} projectid ID number for each project
+     */
     const deleteProject = (projectid) => {
         axios.delete(`http://localhost:3001/api/delete/${projectid}`);
         setProjectList(projectList.filter((p) => p.id !== projectid ))
     };
 
-    const updateProject = (projectDescription, id) => {
+    
+    /**
+     * Update a project via API
+     * @param {string} projectDescription Text to describe what the project is about
+     */
+    const updateProject = (projectDescription, projectid) => {
         axios.put("http://localhost:3001/api/update", {
-            id: id, 
+            id: projectid, 
             projectDescription: projectDescription,
         });
         setProjectDescription(projectDescription);
-        setProjectList(projectList.map((p) => p.id === id ? { ...p, projectDescription: projectDescription} : p ))
+        setProjectList(projectList.map((p) => p.id === projectid ? { ...p, projectDescription: projectDescription} : p ))
     };
 
+    /** 
+     * Add a skill that is used for the project
+     * @param {*} projectId 
+     */
     const addNewSkill = (projectId) => {
         const res = axios.post("http://localhost:3001/api/insert_skill", {
             skill: skill, 
             projectId: projectId,
         });
+        /**
+         * @param {array} p Project
+         */
         projectList.forEach(function (p ) {
             if(p.hasOwnProperty('skills') === false ) {
                 p['skills'] = [];
